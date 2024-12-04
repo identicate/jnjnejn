@@ -1,8 +1,6 @@
 #!/bin/bash
 
-APP_URL="https://pactbroker-sandbox.discoverfinancial.com/"
 
-TEAMS_WEBHOOK_URL="https://discoverfinancial.webhook.office.com/webhookb2/370a8bcd-a4dc-42ae-805e-d3646672b85c@f3f068cf-080c-4824-a912-f8c4633bd454/IncomingWebhook/03b020afa6bd4b11959013b043cd8aab/583e7df8-2330-40a1-a4ba-4e6b16f10fea/V2Cwh8nc5SaVU-30rNisWx8NLT9qAfIduBPii7P_apbIk1"
 
 send_to_teams() {
   local message=$1
