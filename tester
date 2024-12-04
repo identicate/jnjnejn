@@ -1,4 +1,4 @@
-curl -H "Content-Type: application/json" -d '{
+curl --ssl-no-revoke -v -H "Content-Type: application/json" -d '{
   "@type": "MessageCard",
   "@context": "http://schema.org/extensions",
   "themeColor": "FF0000",
