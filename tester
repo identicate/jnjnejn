@@ -1,49 +1,11 @@
-#!/bin/bash
-
-
-
-send_to_teams() {
-  local message=$1
-  local status=$2
-  local color=""
-
-  if [[ "$status" == "UP" ]]; then
-    color="00FF00"  # Green for UP
-  else
-    color="FF0000"  # Red for DOWN
-  fi
-
-  curl -H "Content-Type: application/json" -d "{
-    \"@type\": \"MessageCard\",
-    \"@context\": \"http://schema.org/extensions\",
-    \"themeColor\": \"$color\",
-    \"summary\": \"Application Status Notification\",
-    \"sections\": [{
-      \"activityTitle\": \"$message\",
-      \"facts\": [{
-        \"name\": \"Status:\",
-        \"value\": \"$status\"
-      }],
-      \"markdown\": true
-    }]
-  }" "$TEAMS_WEBHOOK_URL"
-}
-
-check_app_status() {
-  local url=$1
-
-  response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "$url")
-
-  if [[ "$response" -eq 200 ]]; then
-    local message="Status: UP - $url is reachable."
-    echo "$message"
-    send_to_teams "$message" "UP"
-  else
-    local message="Status: DOWN - $url returned HTTP code $response."
-    echo "$message"
-    send_to_teams "$message" "DOWN"
-  fi
-}
-
-echo "Checking application status for $APP_URL..."
-check_app_status "$APP_URL"
+curl -H "Content-Type: application/json" -d '{
+  "@type": "MessageCard",
+  "@context": "http://schema.org/extensions",
+  "themeColor": "00FF00",
+  "summary": "Test Notification",
+  "sections": [{
+    "activityTitle": "Test Message",
+    "activitySubtitle": "Testing the webhook",
+    "markdown": true
+  }]
+}' "https://discoverfinancial.webhook.office.com/webhookb2/370a8bcd-a4dc-42ae-805e-d3646672b85c@f3f068cf-080c-4824-a912-f8c4633bd454/IncomingWebhook/03b020afa6bd4b11959013b043cd8aab/583e7df8-2330-40a1-a4ba-4e6b16f10fea/V2Cwh8nc5SaVU-30rNisWx8NLT9qAfIduBPii7P_apbIk1"
