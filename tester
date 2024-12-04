@@ -6,8 +6,10 @@ spec:
   source:
     git:
       uri: "https://github.com/yourusername/my-script-repo.git"  # Replace with your Git repository URL
+      ref: "main"  # If you're using a specific branch, e.g., 'main' or 'master'
   strategy:
-    docker:
+    type: Docker
+    dockerStrategy:
       dockerfile: |
         FROM ubuntu:20.04
         RUN apt-get update && apt-get install -y curl bash
