@@ -1,10 +1,11 @@
-curl -H "Content-Type: application/json" -d '{
+curl --ssl-no-revoke -v -H "Content-Type: application/json" -d '{
   "@type": "MessageCard",
   "@context": "http://schema.org/extensions",
-  "themeColor": "00FF00",
-  "summary": "Test Notification",
+  "themeColor": "FF0000",
+  "summary": "Application Status Notification",
   "sections": [{
     "activityTitle": "Test Message",
-    "activitySubtitle": "Testing the webhook",
+    "activitySubtitle": "Application Down - Trying Webhook",
     "markdown": true
   }]
+}' "https://discoverfinancial.webhook.office.com/webhookb2/370a8bcd-a4dc-42ae-805e-d3646672b85c@f3f068cf-080c-4824-a912-f8c4633bd454/IncomingWebhook/03b020afa6bd4b11959013b043cd8aab/583e7df8-2330-40a1-a4ba-4e6b16f10fea/V2Cwh8nc5SaVU-30rNisWx8NLT9qAfIduBPii7P_apbIk1"
