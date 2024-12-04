@@ -1,10 +1,22 @@
-apiVersion: v1
-kind: Pod
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
 metadata:
-  name: check-status-pod
+  name: check-status-build
 spec:
-  containers:
-  - name: check-status-container
-    image: check-status:latest  # Image built by the BuildConfig
-    imagePullPolicy: IfNotPresent
-    restartPolicy: OnFailure
+  source:
+    git:
+      uri: "https://github.com/yourusername/my-script-repo.git"  # Replace with your Git repository URL
+      ref: "main"  # Branch name (e.g., 'main' or 'master')
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfile: |
+        FROM ubuntu:20.04
+        RUN apt-get update && apt-get install -y curl bash
+        COPY check_status.sh /usr/local/bin/check_status.sh
+        RUN chmod +x /usr/local/bin/check_status.sh
+        CMD ["/usr/local/bin/check_status.sh"]
+  output:
+    to:
+      kind: ImageStreamTag
+      name: check-status:latest  # This will store the image in the OpenShift ImageStream
