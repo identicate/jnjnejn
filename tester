@@ -1,15 +1,9 @@
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: check-status-cronjob
-spec:
-  schedule: "*/5 * * * *"  # Run every 5 minutes (adjust as needed)
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          containers:
-          - name: check-status
-            image: yourdockerhubusername/check-status-image  # Replace with your image name
-            imagePullPolicy: Always
-          restartPolicy: OnFailure
+FROM ubuntu:20.04
+
+RUN apt-get update && apt-get install -y curl bash
+
+COPY check_status.sh /usr/local/bin/check_status.sh
+
+RUN chmod +x /usr/local/bin/check_status.sh
+
+CMD ["/usr/local/bin/check_status.sh"]
