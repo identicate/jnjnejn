@@ -25,39 +25,6 @@ This document outlines the workflow for implementing Pact with Swagger Mock Vali
    - Define the expected request and response for each interaction.
 3. Run the tests to create a Pact contract file (e.g., `consumer-provider.json`).
 
-#### Example (Pact JS):
-```javascript
-const { Pact } = require('@pact-foundation/pact');
-const provider = new Pact({
-  consumer: 'ConsumerApp',
-  provider: 'ProviderAPI',
-  port: 1234
-});
-
-describe('Pact Test', () => {
-  beforeAll(() => provider.setup());
-
-  it('should make a request to the provider', async () => {
-    await provider.addInteraction({
-      state: 'Provider is available',
-      uponReceiving: 'a request for user data',
-      withRequest: {
-        method: 'GET',
-        path: '/users',
-        headers: { Accept: 'application/json' }
-      },
-      willRespondWith: {
-        status: 200,
-        body: [{ id: 1, name: 'John Doe' }]
-      }
-    });
-
-    // Execute request to the mock provider and verify expectations
-  });
-
-  afterAll(() => provider.finalize());
-});
-```
 
 ### 2. **Contract Validation Against API Documentation**
 #### Steps:
@@ -85,19 +52,7 @@ describe('Pact Test', () => {
    - Write tests to verify the provider meets the consumer's expectations.
 3. Run the provider verification tests.
 
-#### Example (Pact JS):
-```javascript
-const { Verifier } = require('@pact-foundation/pact');
 
-describe('Provider Verification', () => {
-  it('should verify provider against the pact', async () => {
-    await new Verifier({
-      providerBaseUrl: 'http://localhost:8080',
-      pactUrls: ['path/to/consumer-provider.json']
-    }).verifyProvider();
-  });
-});
-```
 
 ### 4. **Integration in CI/CD**
 #### Consumer Workflow:
@@ -112,7 +67,7 @@ describe('Provider Verification', () => {
 
 ---
 
-## Best Practices
+## Things to be taken care of 
 1. **Keep API Documentation Updated**: Always update the Swagger/OpenAPI specification when API changes are made.
 2. **Automate Validation**: Include Pact validation and Swagger Mock Validator in the CI/CD pipeline to catch issues early.
 3. **Use Pact Broker**: Centralize contract storage for better collaboration and versioning.
