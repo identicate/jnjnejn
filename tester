@@ -1,22 +1,68 @@
-apiVersion: build.openshift.io/v1
-kind: BuildConfig
-metadata:
-  name: check-status-build
-spec:
-  source:
-    git:
-      uri: "https://github.com/yourusername/my-script-repo.git"  # Replace with your Git repository URL
-      ref: "main"  # Branch name (e.g., 'main' or 'master')
-  strategy:
-    type: Docker
-    dockerStrategy:
-      dockerfile: |
-        FROM ubuntu:20.04
-        RUN apt-get update && apt-get install -y curl bash
-        COPY check_status.sh /usr/local/bin/check_status.sh
-        RUN chmod +x /usr/local/bin/check_status.sh
-        CMD ["/usr/local/bin/check_status.sh"]
-  output:
-    to:
-      kind: ImageStreamTag
-      name: check-status:latest  # Make sure this references the correct ImageStream in your project
+pipeline {
+    agent any
+
+    environment {
+        PACT_CLI_DIR = "${WORKSPACE}/pact/bin"
+    }
+
+    stages {
+        stage('Install Pact CLI') {
+            steps {
+                script {
+                    // Download and extract Pact CLI for Linux
+                    sh '''
+                    wget https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v1.88.6/pact-linux-x86_64.tar.gz
+                    tar xvfz pact-linux-x86_64.tar.gz
+                    export PATH=$PATH:$PWD/pact/bin
+                    pact --version
+                    '''
+                }
+            }
+        }
+
+        stage('Start Pact Mock Server') {
+            steps {
+                script {
+                    // Start Mock Server
+                    sh '''
+                    ${PACT_CLI_DIR}/pact-mock-service start \
+                    --host localhost \
+                    --port 8080 \
+                    --pact-file ./contracts/consumer-provider-pact.json \
+                    --log pact-mock-server.log &
+                    '''
+                }
+            }
+        }
+
+        stage('Run Component Tests') {
+            steps {
+                script {
+                    // Run your Java application/component tests against the Pact Mock Server
+                    sh '''
+                    echo "Running Consumer Component Tests"
+                    ./gradlew test
+                    '''
+                }
+            }
+        }
+
+        stage('Stop Mock Server') {
+            steps {
+                script {
+                    // Stop Pact Mock Server after tests
+                    sh '''
+                    ${PACT_CLI_DIR}/pact-mock-service stop --port 8080
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Cleanup
+            archiveArtifacts artifacts: 'pact-mock-server.log', fingerprint: true
+        }
+    }
+}
