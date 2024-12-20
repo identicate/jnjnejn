@@ -27,7 +27,7 @@ pipeline {
                     sh '''
                     ${PACT_CLI_DIR}/pact-mock-service start \
                     --host localhost \
-                    --port 8080 \
+                    --port 8082 \
                     --pact-file ./contracts/consumer-provider-pact.json \
                     --log pact-mock-server.log &
                     '''
